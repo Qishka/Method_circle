@@ -9,7 +9,7 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from uitopy.filedialog import App
+from PyQt5.QtCore import QDir,QStringListModel
 
 
 class Ui_MainWindow(object):
@@ -108,7 +108,7 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
         self.action_Open = QtWidgets.QAction(MainWindow)
         self.action_Open.setObjectName("action_Open")
-        self.action_Open.triggered.connect(FileDialog)
+        self.action_Open.triggered.connect(self.getfiles)
         self.actionRadius = QtWidgets.QAction(MainWindow)
         self.actionRadius.setObjectName("actionRadius")
         self.actionOther = QtWidgets.QAction(MainWindow)
@@ -145,9 +145,20 @@ class Ui_MainWindow(object):
         self.actionRadius.setText(_translate("MainWindow", "Radius"))
         self.actionOther.setText(_translate("MainWindow", "Other"))
         self.actionChoose_method.setText(_translate("MainWindow", "Method type"))
+    def getfiles(self):
+      dlg = QtWidgets.QFileDialog()
+      dlg.setFileMode(QtWidgets.QFileDialog.AnyFile)
+      dlg.setFilter(QDir.Files)
+      filenames = QtCore.QStringListModel()
+		
+      if dlg.exec_():
+         filenames = dlg.selectedFiles()
+         f = open(filenames[0], 'r')
+			
+         with f:
+            data = f.read()
+            print(data)
 
 def ShowGraphic():
     print("GraphicShow")
 
-def FileDialog():
-    App.initUI(QtWidgets)

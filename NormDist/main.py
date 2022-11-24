@@ -1,4 +1,4 @@
-from PyQt5 import QtWidgets, uic
+from PyQt5 import QtWidgets
 from uitopy.mainmenu import Ui_MainWindow
 import sys
  
@@ -7,7 +7,6 @@ class mywindow(QtWidgets.QMainWindow):
         super(mywindow,self).__init__()
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-
 
 app = QtWidgets.QApplication([])
 application = mywindow()
