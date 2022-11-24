@@ -10,8 +10,14 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDir,QStringListModel
+from uitopy.radius import Ui_Form
+import sys
 
-
+g_radius = 0
+g_c = []
+g_z = []
+g_x = []
+g_y = []
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -111,6 +117,8 @@ class Ui_MainWindow(object):
         self.action_Open.triggered.connect(self.getfiles)
         self.actionRadius = QtWidgets.QAction(MainWindow)
         self.actionRadius.setObjectName("actionRadius")
+        self.rad_window = Rad()
+        self.actionRadius.triggered.connect(self.rad_window.show)
         self.actionOther = QtWidgets.QAction(MainWindow)
         self.actionOther.setObjectName("actionOther")
         self.actionChoose_method = QtWidgets.QAction(MainWindow)
@@ -145,6 +153,7 @@ class Ui_MainWindow(object):
         self.actionRadius.setText(_translate("MainWindow", "Radius"))
         self.actionOther.setText(_translate("MainWindow", "Other"))
         self.actionChoose_method.setText(_translate("MainWindow", "Method type"))
+    #FileDialog    
     def getfiles(self):
       dlg = QtWidgets.QFileDialog()
       dlg.setFileMode(QtWidgets.QFileDialog.AnyFile)
@@ -162,3 +171,10 @@ class Ui_MainWindow(object):
 def ShowGraphic():
     print("GraphicShow")
 
+class Rad(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(Rad,self).__init__()
+        self.ui = Ui_Form()
+        self.ui.setupUi(self)
+        
+    

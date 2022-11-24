@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Form(object):
+class Ui_Form(QtWidgets.QWidget):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(308, 142)
@@ -26,7 +26,7 @@ class Ui_Form(object):
         self.pushButton = QtWidgets.QPushButton(Form)
         self.pushButton.setGeometry(QtCore.QRect(190, 100, 93, 28))
         self.pushButton.setObjectName("pushButton")
-
+        self.pushButton.clicked.connect(self.Ok_button)
         self.retranslateUi(Form)
         QtCore.QMetaObject.connectSlotsByName(Form)
 
@@ -35,3 +35,12 @@ class Ui_Form(object):
         Form.setWindowTitle(_translate("Form", "Form"))
         self.label.setText(_translate("Form", "Радиус"))
         self.pushButton.setText(_translate("Form", "OK"))
+    def Ok_button(self):
+        with open("radius.txt","w") as radius_file:
+            radius_file.write(self.lineEdit_3.text())
+            self.pushButton.setEnabled(False)
+
+            
+
+
+
