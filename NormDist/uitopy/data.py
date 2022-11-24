@@ -61,3 +61,20 @@ class Ui_Dialog(object):
         item.setText(_translate("Dialog", "y, мм"))
         self.label.setText(_translate("Dialog", "Данные"))
         self.pushButton.setText(_translate("Dialog", "Изменить"))
+        self.pushButton.clicked.connect(self.datachange)
+    
+    def datachange(self):
+        with open("data.txt","r") as pdata:
+            array_pdata = pdata.read().split(" ")
+        k = 0
+        for i in range(len(array_pdata)):
+            if (i%2==0):
+                self.tableWidget.setItem(k,0,QtWidgets.QTableWidgetItem(str(array_pdata[i])))
+            else:
+                self.tableWidget.setItem(k,1,QtWidgets.QTableWidgetItem(str(array_pdata[i])))
+                k+=1
+
+
+        
+
+

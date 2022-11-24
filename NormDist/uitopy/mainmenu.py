@@ -11,6 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDir,QStringListModel
 from uitopy.radius import Ui_Form
+from uitopy.data import Ui_Dialog
 import sys
 
 g_radius = 0
@@ -118,9 +119,11 @@ class Ui_MainWindow(object):
         self.actionRadius = QtWidgets.QAction(MainWindow)
         self.actionRadius.setObjectName("actionRadius")
         self.rad_window = Rad()
+        self.data_window = Other()
         self.actionRadius.triggered.connect(self.rad_window.show)
         self.actionOther = QtWidgets.QAction(MainWindow)
         self.actionOther.setObjectName("actionOther")
+        self.actionOther.triggered.connect(self.data_window.show)
         self.actionChoose_method = QtWidgets.QAction(MainWindow)
         self.actionChoose_method.setObjectName("actionChoose_method")
         self.menu_File.addAction(self.action_Open)
@@ -168,13 +171,18 @@ class Ui_MainWindow(object):
             data = f.read()
             print(data)
 
+
 def ShowGraphic():
     print("GraphicShow")
+  
+class Other(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(Other,self).__init__()
+        self.ui = Ui_Dialog()
+        self.ui.setupUi(self)
 
 class Rad(QtWidgets.QMainWindow):
     def __init__(self):
         super(Rad,self).__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
-        
-    
