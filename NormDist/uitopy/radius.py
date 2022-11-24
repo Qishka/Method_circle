@@ -38,7 +38,8 @@ class Ui_Form(QtWidgets.QWidget):
     def Ok_button(self):
         with open("radius.txt","w") as radius_file:
             radius_file.write(self.lineEdit_3.text())
-            self.pushButton.setEnabled(False)
+            
+            
 
             
 

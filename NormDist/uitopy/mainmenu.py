@@ -176,5 +176,7 @@ class Rad(QtWidgets.QMainWindow):
         super(Rad,self).__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        self.ui.pushButton.clicked.connect(lambda: self.close())
+
         
     
