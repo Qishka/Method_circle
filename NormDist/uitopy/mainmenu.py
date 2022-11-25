@@ -12,13 +12,16 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QDir,QStringListModel
 from uitopy.radius import Ui_Form
 from uitopy.data import Ui_Dialog
+from uitopy.method_type import Ui_FormMethod
 import sys
 
 g_radius = 0
+g_radiuslist = []
 g_c = []
 g_z = []
 g_x = []
 g_y = []
+g_method = " "
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -120,12 +123,14 @@ class Ui_MainWindow(object):
         self.actionRadius.setObjectName("actionRadius")
         self.rad_window = Rad()
         self.data_window = Other()
+        self.method_window = Method()
         self.actionRadius.triggered.connect(self.rad_window.show)
         self.actionOther = QtWidgets.QAction(MainWindow)
         self.actionOther.setObjectName("actionOther")
         self.actionOther.triggered.connect(self.data_window.show)
         self.actionChoose_method = QtWidgets.QAction(MainWindow)
         self.actionChoose_method.setObjectName("actionChoose_method")
+        self.actionChoose_method.triggered.connect(self.method_window.show)
         self.menu_File.addAction(self.action_Open)
         self.menuChange.addAction(self.actionRadius)
         self.menuChange.addAction(self.actionOther)
@@ -148,7 +153,7 @@ class Ui_MainWindow(object):
         self.label_6.setText(_translate("MainWindow", "Отклонение"))
         self.label_7.setText(_translate("MainWindow", "Метод"))
         self.pushButton.setText(_translate("MainWindow", "Показать график"))
-        self.pushButton.clicked.connect(ShowGraphic)
+        self.pushButton.clicked.connect(self.ShowGraphic)
         self.menu_File.setTitle(_translate("MainWindow", "&File"))
         self.menuChange.setTitle(_translate("MainWindow", "Edit"))
         self.menuMethod.setTitle(_translate("MainWindow", "Method"))
@@ -171,10 +176,34 @@ class Ui_MainWindow(object):
             data = f.read()
             print(data)
 
+    def ShowGraphic(self):
+        with open("radius.txt","r") as radius:
+            global g_radius
+            g_radius = radius.read()
+            print(type(g_radius),g_radius)
+            self.lineEdit_3.setText(radius.read())
+        with open("method.txt","r") as method:
+            self.lineEdit.setText(method.read())
+            global g_method
+            g_method = method.read()
+        with open("data.txt","r") as data:
+            listdata = data.read().split(" ")
+            k = 0
+            global g_c
+            global g_z
+            for i in range(len(listdata)):
+                if (i%2==0):
+                    g_c.append(listdata[i])
+                else:
+                    g_z.append(listdata[i])
+                    k+=1 
+        global g_radiuslist
+        g_radiuslist = Radius_list(g_radiuslist,g_radius)
+        print(g_c)
+        print(g_z)
+        print(g_radiuslist)
+        print("GraphicShow")      
 
-def ShowGraphic():
-    print("GraphicShow")
-  
 class Other(QtWidgets.QMainWindow):
     def __init__(self):
         super(Other,self).__init__()
@@ -186,3 +215,14 @@ class Rad(QtWidgets.QMainWindow):
         super(Rad,self).__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+
+class Method(QtWidgets.QMainWindow):
+    def __init__(self):
+        super(Method,self).__init__()
+        self.ui = Ui_FormMethod()
+        self.ui.setupUi(self)
+
+def Radius_list(rlist,radius):
+    for item in g_z:
+        rlist.append((int(radius) - float(item)))
+    return rlist

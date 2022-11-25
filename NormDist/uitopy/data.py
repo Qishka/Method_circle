@@ -73,6 +73,8 @@ class Ui_Dialog(object):
             else:
                 self.tableWidget.setItem(k,1,QtWidgets.QTableWidgetItem(str(array_pdata[i])))
                 k+=1
+        with open("radius.txt","r") as radius:
+            print(radius.read())
 
 
         

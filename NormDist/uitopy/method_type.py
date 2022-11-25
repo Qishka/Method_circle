@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_Form(object):
+class Ui_FormMethod(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
         Form.resize(462, 193)
@@ -19,6 +19,8 @@ class Ui_Form(object):
         self.lineEdit.setEnabled(False)
         self.lineEdit.setGeometry(QtCore.QRect(0, 20, 461, 81))
         self.lineEdit.setObjectName("lineEdit")
+        with open("method.txt","r") as method:
+            self.lineEdit.setText(method.read())
         self.horizontalLayoutWidget = QtWidgets.QWidget(Form)
         self.horizontalLayoutWidget.setGeometry(QtCore.QRect(0, 100, 461, 80))
         self.horizontalLayoutWidget.setObjectName("horizontalLayoutWidget")
@@ -27,12 +29,15 @@ class Ui_Form(object):
         self.horizontalLayout.setObjectName("horizontalLayout")
         self.pushButton_3 = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         self.pushButton_3.setObjectName("pushButton_3")
+        self.pushButton_3.clicked.connect(self.ButtonCallMZ)
         self.horizontalLayout.addWidget(self.pushButton_3)
         self.pushButton_2 = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_2.clicked.connect(self.ButtonCallPO)
         self.horizontalLayout.addWidget(self.pushButton_2)
         self.pushButton = QtWidgets.QPushButton(self.horizontalLayoutWidget)
         self.pushButton.setObjectName("pushButton")
+        self.pushButton.clicked.connect(self.ButtonCallSO)
         self.horizontalLayout.addWidget(self.pushButton)
 
         self.retranslateUi(Form)
@@ -44,3 +49,20 @@ class Ui_Form(object):
         self.pushButton_3.setText(_translate("Form", "Минимальная зона"))
         self.pushButton_2.setText(_translate("Form", "Прилегающая окружность"))
         self.pushButton.setText(_translate("Form", "Средняя окружность"))
+
+    def ButtonCallMZ(self):
+        with open("method.txt","r+") as method:
+            method.truncate(0)
+            self.lineEdit.setText("Minimal Zone")
+            method.write("Minimal Zone")
+            
+    def ButtonCallPO(self):
+        with open("method.txt","r+") as method:
+            method.truncate(0)
+            method.write("Adjacent circle")
+            self.lineEdit.setText("Adjacent circle")
+    def ButtonCallSO(self):
+        with open("method.txt","r+") as method:
+            method.truncate(0)
+            method.write("Middle circle")
+            self.lineEdit.setText("Middle circle")
