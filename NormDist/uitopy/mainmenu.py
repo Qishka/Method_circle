@@ -215,6 +215,7 @@ class Rad(QtWidgets.QMainWindow):
         super(Rad,self).__init__()
         self.ui = Ui_Form()
         self.ui.setupUi(self)
+        self.ui.pushButton.clicked.connect(lambda: self.close())
 
 class Method(QtWidgets.QMainWindow):
     def __init__(self):
@@ -226,3 +227,6 @@ def Radius_list(rlist,radius):
     for item in g_z:
         rlist.append((int(radius) - float(item)))
     return rlist
+        
+
+    
