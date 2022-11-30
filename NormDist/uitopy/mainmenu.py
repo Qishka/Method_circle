@@ -13,7 +13,10 @@ from PyQt5.QtCore import QDir,QStringListModel
 from uitopy.radius import Ui_Form
 from uitopy.data import Ui_Dialog
 from uitopy.method_type import Ui_FormMethod
-import sys
+import pandas as pd
+import numpy as np
+from scipy.optimize import minimize, NonlinearConstraint
+import matplotlib.pyplot as plt
 
 g_radius = 0
 g_radiuslist = []
@@ -26,9 +29,6 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1075, 593)
-        icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("D:/Download/1eadf4027937d699a83ac0905d82204a-3745024997.jpg"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
-        MainWindow.setWindowIcon(icon)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
@@ -47,6 +47,7 @@ class Ui_MainWindow(object):
         self.lineEdit_3 = QtWidgets.QLineEdit(self.verticalLayoutWidget)
         self.lineEdit_3.setEnabled(False)
         self.lineEdit_3.setObjectName("lineEdit_3")
+        self.lineEdit_3.setText(f'{g_radius}')
         self.verticalLayout.addWidget(self.lineEdit_3)
         self.label_2 = QtWidgets.QLabel(self.verticalLayoutWidget)
         self.label_2.setObjectName("label_2")
@@ -62,20 +63,7 @@ class Ui_MainWindow(object):
         self.lineEdit_6.setEnabled(False)
         self.lineEdit_6.setObjectName("lineEdit_6")
         self.verticalLayout.addWidget(self.lineEdit_6)
-        self.label_4 = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label_4.setObjectName("label_4")
-        self.verticalLayout.addWidget(self.label_4)
-        self.lineEdit_4 = QtWidgets.QLineEdit(self.verticalLayoutWidget)
-        self.lineEdit_4.setEnabled(False)
-        self.lineEdit_4.setObjectName("lineEdit_4")
-        self.verticalLayout.addWidget(self.lineEdit_4)
-        self.label_5 = QtWidgets.QLabel(self.verticalLayoutWidget)
-        self.label_5.setObjectName("label_5")
-        self.verticalLayout.addWidget(self.label_5)
-        self.lineEdit_2 = QtWidgets.QLineEdit(self.verticalLayoutWidget)
-        self.lineEdit_2.setEnabled(False)
-        self.lineEdit_2.setObjectName("lineEdit_2")
-        self.verticalLayout.addWidget(self.lineEdit_2)
+        
         self.label_6 = QtWidgets.QLabel(self.verticalLayoutWidget)
         self.label_6.setObjectName("label_6")
         self.verticalLayout.addWidget(self.label_6)
@@ -83,17 +71,7 @@ class Ui_MainWindow(object):
         self.lineEdit_7.setEnabled(False)
         self.lineEdit_7.setObjectName("lineEdit_7")
         self.verticalLayout.addWidget(self.lineEdit_7)
-        self.label_7 = QtWidgets.QLabel(self.centralwidget)
-        self.label_7.setGeometry(QtCore.QRect(668, 10, 91, 51))
-        font = QtGui.QFont()
-        font.setPointSize(14)
-        font.setBold(True)
-        font.setWeight(75)
-        self.label_7.setFont(font)
-        self.label_7.setLayoutDirection(QtCore.Qt.LeftToRight)
-        self.label_7.setAutoFillBackground(False)
-        self.label_7.setAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignTrailing|QtCore.Qt.AlignVCenter)
-        self.label_7.setObjectName("label_7")
+       
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton.setGeometry(QtCore.QRect(70, 100, 671, 351))
         font = QtGui.QFont()
@@ -148,10 +126,9 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "Радиус"))
         self.label_2.setText(_translate("MainWindow", "X"))
         self.label_3.setText(_translate("MainWindow", "Y"))
-        self.label_4.setText(_translate("MainWindow", "Максимум"))
-        self.label_5.setText(_translate("MainWindow", "Минимум"))
+        
         self.label_6.setText(_translate("MainWindow", "Отклонение"))
-        self.label_7.setText(_translate("MainWindow", "Метод"))
+        
         self.pushButton.setText(_translate("MainWindow", "Показать график"))
         self.pushButton.clicked.connect(self.ShowGraphic)
         self.menu_File.setTitle(_translate("MainWindow", "&File"))
@@ -169,40 +146,56 @@ class Ui_MainWindow(object):
       filenames = QtCore.QStringListModel()
 		
       if dlg.exec_():
-         filenames = dlg.selectedFiles()
-         f = open(filenames[0], 'r')
-			
-         with f:
-            data = f.read()
-            print(data)
+        filenames = dlg.selectedFiles()
+        global file_name
+        file_name = filenames[0]
+        print(file_name)
 
     def ShowGraphic(self):
-        with open("radius.txt","r") as radius:
-            global g_radius
-            g_radius = radius.read()
-            print(type(g_radius),g_radius)
-            self.lineEdit_3.setText(radius.read())
-        with open("method.txt","r") as method:
-            self.lineEdit.setText(method.read())
-            global g_method
-            g_method = method.read()
-        with open("data.txt","r") as data:
-            listdata = data.read().split(" ")
-            k = 0
-            global g_c
-            global g_z
-            for i in range(len(listdata)):
-                if (i%2==0):
-                    g_c.append(listdata[i])
-                else:
-                    g_z.append(listdata[i])
-                    k+=1 
-        global g_radiuslist
-        g_radiuslist = Radius_list(g_radiuslist,g_radius)
-        print(g_c)
-        print(g_z)
-        print(g_radiuslist)
-        print("GraphicShow")      
+        data = pd.read_excel(file_name)
+
+        Xs = list(data['X'])
+        Ys = list(data['Y'])
+        
+        x = np.array([0,0,10]) # x[0] = x0m; x[1] = y0m; x[2] = Rm;
+   
+        dmin_max = lambda x: np.max(x[2]-np.sqrt((Xs - x[0])**2+(Ys-x[1])**2))
+        dmin_min = lambda x: np.min(x[2]-np.sqrt((Xs - x[0])**2+(Ys-x[1])**2))
+
+        constraint = NonlinearConstraint(dmin_min, 0, np.inf)
+
+        res = minimize(dmin_max, [0,0,10], method='SLSQP', constraints=constraint)
+    
+        x0m = round(res.x[0],3)
+        y0m = round(res.x[1],3)
+        Rm = round(res.x[2],2)
+        dmin = round(res.fun,3)
+        angle = np.linspace(0, 2 * np.pi, (len(Xs)-1)*10)
+
+        self.lineEdit_3.setText(str(Rm))
+        self.lineEdit_5.setText(str(x0m))
+        self.lineEdit_6.setText(str(y0m))
+        self.lineEdit_7.setText(str(dmin))
+
+        x = Rm * np.cos(angle) + x0m
+        y = Rm * np.sin(angle) + y0m
+
+        #axes = plt.subplots(1)
+        plt.gca().spines['left'].set_position('center')
+        plt.gca().spines['bottom'].set_position('center')
+
+        plt.gca().spines['right'].set_color('none')
+        plt.gca().spines['top'].set_color('none')
+
+        plt.plot(Xs,Ys)
+
+        plt.plot(x,y)
+        plt.gca().set_aspect(1)
+        
+        plt.title('AAAAAAAAAAAAAA')
+        plt.show()
+        
+        print("GraphicShow")     
 
 class Other(QtWidgets.QMainWindow):
     def __init__(self):
@@ -228,5 +221,3 @@ def Radius_list(rlist,radius):
         rlist.append((int(radius) - float(item)))
     return rlist
         
-
-    
